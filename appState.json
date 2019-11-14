@@ -1,0 +1,128 @@
+{
+  "EDITOR_STATE": {
+    "allProjectFiles": {
+      "a4e1c341-a21e-43f2-b2bb-53aa390a7190": {
+        "id": "a4e1c341-a21e-43f2-b2bb-53aa390a7190",
+        "parent": null,
+        "name": "ServerlessSMS",
+        "type": "DIRECTORY",
+        "isDirectory": true,
+        "children": [
+          "ab39a232-c6e0-4301-8bd1-acb5dd615508"
+        ],
+        "isRemovable": false,
+        "filePath": "ServerlessSMS"
+      },
+      "ab39a232-c6e0-4301-8bd1-acb5dd615508": {
+        "id": "ab39a232-c6e0-4301-8bd1-acb5dd615508",
+        "parent": "a4e1c341-a21e-43f2-b2bb-53aa390a7190",
+        "name": "lambda.js",
+        "type": "JS_LAMBDA",
+        "isDirectory": false,
+        "children": [],
+        "isRemovable": true,
+        "filePath": "ServerlessSMS/lambda.js",
+        "code": "let AWS = require('aws-sdk');\nconst sns = new AWS.SNS();\n\nexports.handler = function (event, context, callback) {\n\n    let receiver = event['receiver'];\n    let sender = event['sender'];\n    let message = event['message'];\n    let isPromotional = true;\n    \n    console.log(\"Sending message\", message, \"to receiver\", receiver);\n    sns.publish({\n        Message: message,\n        MessageAttributes: {\n            'AWS.SNS.SMS.SMSType': {\n                'DataType': 'String',\n                'StringValue': 'Promotional'\n            },\n            'AWS.SNS.SMS.SenderID': {\n                'DataType': 'String',\n                'StringValue': sender\n            }\n        },\n        PhoneNumber: receiver\n    }).promise()\n        .then(data => {\n            console.log(\"Sent message to\", receiver);\n\t\t\tcallback(null, data);\n        })\n        .catch(err => {\n           console.log(\"Sending failed\", err);\n\t\t\tcallback(err);\n        });\n\n    \n}",
+        "config": {
+          "runtime": "nodejs8.10",
+          "handler": "handler",
+          "timeout": 60,
+          "memory": 128,
+          "layers": []
+        },
+        "triggers": [
+          {
+            "resourceName": "apigapSoutheast2SMSGatewaysendSMSpost",
+            "config": {}
+          }
+        ],
+        "testCases": {
+          "a5a3f727-e7e7-4f3f-a2de-424665246514": {
+            "id": "a5a3f727-e7e7-4f3f-a2de-424665246514",
+            "name": "Unit Test",
+            "functionId": "ab39a232-c6e0-4301-8bd1-acb5dd615508",
+            "event": "{ \"receiver\": \"+61404756330\",\n \"sender\": \"TFS\",\n \"message\": \"Hello there! How are you doing?\"\n}"
+          }
+        }
+      }
+    },
+    "deletedFiles": [],
+    "rootNode": "a4e1c341-a21e-43f2-b2bb-53aa390a7190",
+    "openFiles": [
+      "ab39a232-c6e0-4301-8bd1-acb5dd615508"
+    ],
+    "currentFileId": "ab39a232-c6e0-4301-8bd1-acb5dd615508",
+    "resources": {
+      "apigapSoutheast2SMSGatewaysendSMSpost": {
+        "name": "apigapSoutheast2SMSGatewaysendSMSpost",
+        "type": "API_GATEWAY",
+        "config": {
+          "selectedRegion": "ap-southeast-2",
+          "apiMode": 0,
+          "apiName": "SMSGateway",
+          "endpointType": "EDGE",
+          "resourceMode": 0,
+          "resourceName": "sendSMS",
+          "resourcePath": "/sendSMS",
+          "restMethod": "POST",
+          "proxyIntegration": false,
+          "enableCORS": false,
+          "stageMode": 0,
+          "stageName": "prod",
+          "mode": 0
+        }
+      },
+      "snsDirectSMSResource": {
+        "name": "snsDirectSMSResource",
+        "type": "SNS",
+        "config": {
+          "snsType": 1,
+          "numbers": [
+            "@{receiver}"
+          ]
+        }
+      }
+    },
+    "customTemplate": {
+      "dialect": null,
+      "definitions": {}
+    },
+    "envVariables": [
+      {
+        "lambdaId": "all",
+        "varKey": "SIGMA_AWS_ACC_ID",
+        "varValue": null,
+        "shouldPersist": false,
+        "displayOnly": false,
+        "editable": false
+      }
+    ],
+    "packageJSON": {
+      "dependencies": {
+        "aws-sdk": {
+          "name": "aws-sdk",
+          "language": "javascript",
+          "version": "2.176.0",
+          "dev": true,
+          "notRemovable": false
+        }
+      }
+    }
+  },
+  "PROJECT_META": {
+    "projectName": "ServerlessSMS",
+    "projectDescription": "Sample project to send SMS via SNS using lamda",
+    "projectVersion": "1.0.0",
+    "projectRegion": "ap-southeast-2",
+    "platform": "AWS",
+    "platformRegions": {},
+    "lastSave": 1573704078436
+  },
+  "VCS_STATE": {
+    "provider": "GitHub",
+    "repo": {
+      "name": "ServerlessSMS",
+      "url": "https://github.com/prabhuau25/ServerlessSMS"
+    }
+  }
+}
